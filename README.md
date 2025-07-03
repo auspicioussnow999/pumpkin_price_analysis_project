@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Pumpkin Price Analysis Project
 
 ## 项目概述
@@ -14,3 +15,6 @@
 - `reports/analysis_report.json`：分析结果
 - `reports/figures/price_trend.png`：价格趋势图
 - `reports/figures/city_comparison.png`：城市价格比较
+=======
+# pumpkin_price_analysis_project
+>>>>>>> 278eb7c6fe5a38ca29bb5962c26bafbfad3af976
