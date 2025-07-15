@@ -5,7 +5,7 @@ import os
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 from sklearn.compose import ColumnTransformer
@@ -94,7 +94,10 @@ def perform_analysis(data_path, report_path):
             # 创建模型管道
             model = Pipeline(steps=[
                 ('preprocessor', preprocessor),
-                ('regressor', LinearRegression())
+                (('regressor', RandomForestRegressor(n_estimators=200,
+                                    max_depth=10,
+                                    min_samples_split=5,
+                                    random_state=42)))
             ])
 
             # 训练模型

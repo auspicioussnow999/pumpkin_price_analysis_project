@@ -108,13 +108,13 @@
         ]
     },
     "machine_learning": {
-        "model_type": "\u7ebf\u6027\u56de\u5f52",
+        "model_type": "RandomForestRegressor",
         "features": [
-            "\u57ce\u5e02",
-            "\u5357\u74dc\u7c7b\u578b",
-            "\u6708\u4efd"
+            "City",
+            "Type",
+            "Month"
         ],
-        "target": "\u5e73\u5747\u4ef7\u683c",
+        "target": "Avg Price",
         "test_size": 336,
         "mean_squared_error": 6432.329274584351,
         "r2_score": 0.19893945481916153,

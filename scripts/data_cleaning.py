@@ -32,7 +32,7 @@ def clean_data(input_path, output_path):
             header=0,
             names=column_names,
             engine='python',
-            on_bad_lines='warn'
+            error_bad_lines=False, warn_bad_lines=True
         )
     except Exception as e:
         print(f"读取文件出错: {e}")
@@ -45,7 +45,7 @@ def clean_data(input_path, output_path):
                 header=0,
                 names=column_names,
                 engine='python',
-                on_bad_lines='warn'
+                error_bad_lines=False, warn_bad_lines=True
             )
         except Exception as e2:
             print(f"使用制表符分隔也失败: {e2}")
@@ -57,7 +57,7 @@ def clean_data(input_path, output_path):
                 header=0,
                 names=column_names,
                 engine='python',
-                on_bad_lines='warn'
+                error_bad_lines=False, warn_bad_lines=True
             )
 
     # 4. 打印数据信息以便调试
@@ -67,8 +67,8 @@ def clean_data(input_path, output_path):
     print("前5行数据:")
     print(df.head())
 
-    # 5. 选择需要的列
-    required_columns = ['Date', 'City Name', 'Type', 'Low Price', 'High Price']
+    required_columns = ['Date', 'City Name', 'Type', 'Low Price', 'High Price',
+                        'Package', 'Grade', 'Variety', 'Color', 'Origin']
     # 确保只选择存在的列
     available_columns = [col for col in required_columns if col in df.columns]
     missing_columns = [col for col in required_columns if col not in df.columns]
@@ -89,6 +89,7 @@ def clean_data(input_path, output_path):
         if not date_str:
             return None
 
+
         formats = [
             '%Y/%m/%d',  # 2011/5/16
             '%m/%d/%y',  # 9/24/16
@@ -108,11 +109,26 @@ def clean_data(input_path, output_path):
     if 'Date' in df.columns:
         df['Date'] = df['Date'].apply(convert_date)
         df = df.dropna(subset=['Date'])
+        # 包装规格转升
+        df['Package_L'] = pd.to_numeric(
+            df['Package'].str.extract(r'([\d.]+)')[0], errors='coerce'
+        ) * 35.239  # 1 bushel ≈ 35.239 L
 
+        # 类别低频合并
+        for col in ['Grade', 'Variety', 'Color', 'Origin']:
+            top = df[col].value_counts().nlargest(10).index
+            df[col] = df[col].where(df[col].isin(top), 'Other')
+
+        # 编码
+        for col in ['Grade', 'Variety', 'Color', 'Origin']:
+            df[col] = pd.Categorical(df[col]).codes
     # 8. 处理缺失值和异常值
     if 'Low Price' in df.columns and 'High Price' in df.columns:
         df = df.dropna(subset=['Low Price', 'High Price'])
         df = df[(df['Low Price'] > 0) & (df['High Price'] > 0)]
+        df['Package_L'] = pd.to_numeric(df['Package'].str.extract(r'([\d.]+)')[0], errors='coerce') * 35.239
+        df['Grade'] = pd.Categorical(df['Grade']).codes
+        df = df.dropna(subset=['Low Price', 'High Price', 'Package_L'])
         # 9. 计算平均价格
         df['Avg Price'] = (df['Low Price'] + df['High Price']) / 2
     else:

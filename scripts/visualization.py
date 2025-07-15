@@ -4,7 +4,6 @@ import seaborn as sns
 import os
 import numpy as np
 
-
 def visualize_data(data_path, figures_dir):
     """
     生成南瓜价格数据的可视化图表
@@ -31,17 +30,14 @@ def visualize_data(data_path, figures_dir):
     else:
         print("警告: 缺少日期列，无法生成时间序列图")
 
-    # 2. 城市平均价格条形图（按平均价格排序）
+    #2 城市平均价格条形图
     plt.figure(figsize=(10, 6))
     if 'City' in df.columns and 'Avg Price' in df.columns:
         city_avg = df.groupby('City')['Avg Price'].mean().sort_values(ascending=False)
-        # 修复：添加hue参数并设置legend=False
         sns.barplot(
             x=city_avg.values,
             y=city_avg.index,
-            hue=city_avg.index,  # 添加hue参数
-            palette='viridis',
-            legend=False  # 隐藏图例
+            palette='viridis'
         )
         plt.title('平均南瓜价格按城市排名')
         plt.xlabel('平均价格')
@@ -49,8 +45,6 @@ def visualize_data(data_path, figures_dir):
         plt.tight_layout()
         plt.savefig(os.path.join(figures_dir, 'city_avg_price.png'))
         plt.close()
-    else:
-        print("警告: 缺少城市或平均价格列，无法生成城市价格图")
 
     # 3. 南瓜类型价格分布
     plt.figure(figsize=(10, 6))
